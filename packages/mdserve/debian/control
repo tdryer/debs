@@ -1,0 +1,13 @@
+Source: mdserve
+Section: misc
+Maintainer: Local Builder <builder@localhost>
+Build-Depends: debhelper-compat (= 13), curl
+Homepage: https://github.com/jfernandez/mdserve
+
+Package: mdserve
+Architecture: amd64
+Description: Markdown preview server for AI coding agents.
+ mdserve is a zero-config markdown preview server designed as a live
+ rendering companion for AI coding agents. It supports instant live
+ reload, GitHub Flavored Markdown tables, code blocks, and Mermaid
+ diagrams.

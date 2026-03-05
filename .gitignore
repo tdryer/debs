@@ -1,0 +1,18 @@
+# Debian build artifacts
+packages/*/debian/.debhelper/
+packages/*/debian/changelog
+packages/*/debian/debhelper-build-stamp
+packages/*/debian/files
+packages/*/debian/*.substvars
+packages/*/debian/*/
+
+# Upstream source/binaries
+*.tar.gz
+*.txz
+packages/*/source/
+
+# Build outputs
+packages/*.deb
+packages/*.buildinfo
+packages/*.changes
+output/

@@ -1,0 +1,12 @@
+Source: copilot
+Section: misc
+Maintainer: Local Builder <builder@localhost>
+Build-Depends: debhelper-compat (= 13), curl
+Homepage: https://github.com/github/copilot-cli
+
+Package: copilot
+Architecture: amd64
+Description: GitHub Copilot in the CLI.
+ GitHub Copilot in the CLI provides a chat-like interface in the
+ terminal that allows you to ask questions about the command line,
+ generate shell commands, and explain commands.

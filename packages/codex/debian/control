@@ -1,0 +1,12 @@
+Source: codex
+Section: misc
+Maintainer: Local Builder <builder@localhost>
+Build-Depends: debhelper-compat (= 13), curl
+Homepage: https://github.com/openai/codex
+
+Package: codex
+Architecture: amd64
+Description: Lightweight coding agent that runs in your terminal.
+ Codex is OpenAI's open-source coding agent that runs in the terminal.
+ It can read and modify local files, execute commands, and help with
+ software engineering tasks using natural language instructions.

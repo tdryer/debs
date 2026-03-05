@@ -1,0 +1,36 @@
+#!/usr/bin/make -f
+
+PKG_VERSION := $(or $(PKG_VERSION),$(error PKG_VERSION not set))
+KITTY_TARBALL := kitty-$(PKG_VERSION).txz
+KITTY_URL := https://github.com/kovidgoyal/kitty/releases/download/v$(PKG_VERSION)/kitty-$(PKG_VERSION)-x86_64.txz
+%:
+	dh $@
+
+override_dh_auto_build:
+	curl -sL -o $(KITTY_TARBALL) $(KITTY_URL)
+	rm -rf source
+	mkdir -p source
+	tar xf $(KITTY_TARBALL) -C source
+
+override_dh_auto_install:
+	mkdir -p debian/kitty/opt/kitty
+	cp -r source/bin source/lib debian/kitty/opt/kitty/
+	mkdir -p debian/kitty/usr/bin
+	ln -s /opt/kitty/bin/kitty debian/kitty/usr/bin/kitty
+	ln -s /opt/kitty/bin/kitten debian/kitty/usr/bin/kitten
+	mkdir -p debian/kitty/usr/share
+	cp -r source/share/man debian/kitty/usr/share/man
+	cp -r source/share/terminfo debian/kitty/usr/share/terminfo
+	install -D -m 644 source/share/applications/kitty.desktop debian/kitty/usr/share/applications/kitty.desktop
+	install -D -m 644 source/share/applications/kitty-open.desktop debian/kitty/usr/share/applications/kitty-open.desktop
+	install -D -m 644 source/share/icons/hicolor/256x256/apps/kitty.png debian/kitty/usr/share/icons/hicolor/256x256/apps/kitty.png
+	install -D -m 644 source/share/icons/hicolor/scalable/apps/kitty.svg debian/kitty/usr/share/icons/hicolor/scalable/apps/kitty.svg
+
+override_dh_auto_clean:
+	rm -rf $(KITTY_TARBALL) source
+
+override_dh_strip:
+	# Skip stripping pre-built binaries
+
+override_dh_shlibdeps:
+	# Skip shared library dependency detection for bundled binaries

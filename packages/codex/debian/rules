@@ -1,0 +1,26 @@
+#!/usr/bin/make -f
+
+PKG_VERSION := $(or $(PKG_VERSION),$(error PKG_VERSION not set))
+CODEX_TARBALL := codex-$(PKG_VERSION).tar.gz
+CODEX_URL := https://github.com/openai/codex/releases/download/rust-v$(PKG_VERSION)/codex-x86_64-unknown-linux-gnu.tar.gz
+
+%:
+	dh $@
+
+override_dh_auto_build:
+	curl -sL -o $(CODEX_TARBALL) $(CODEX_URL)
+	rm -rf source
+	mkdir -p source
+	tar xzf $(CODEX_TARBALL) -C source
+
+override_dh_auto_install:
+	install -D -m 755 source/codex-x86_64-unknown-linux-gnu debian/codex/usr/bin/codex
+
+override_dh_auto_clean:
+	rm -rf $(CODEX_TARBALL) source
+
+override_dh_strip:
+	# Skip stripping pre-built binaries
+
+override_dh_shlibdeps:
+	# Skip shared library dependency detection for pre-built binary

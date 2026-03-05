@@ -1,0 +1,13 @@
+#!/bin/bash
+set -eo pipefail
+# Usage: get-latest-version <owner/repo> [prefix-to-strip]
+repo="$1"
+curl_args=(-s --fail)
+if [ -n "$GITHUB_TOKEN" ]; then
+    curl_args+=(-H "Authorization: token $GITHUB_TOKEN")
+fi
+version=$(curl "${curl_args[@]}" "https://api.github.com/repos/$repo/releases/latest" | jq -r '.tag_name')
+if [ -n "$2" ]; then
+    version="${version#"$2"}"
+fi
+echo "$version"

@@ -1,0 +1,25 @@
+#!/usr/bin/make -f
+
+PKG_VERSION := $(or $(PKG_VERSION),$(error PKG_VERSION not set))
+MDSERVE_URL := https://github.com/jfernandez/mdserve/releases/download/v$(PKG_VERSION)/mdserve-x86_64-unknown-linux-gnu
+
+%:
+	dh $@
+
+override_dh_auto_build:
+	rm -rf source
+	mkdir -p source
+	curl -sL -o source/mdserve $(MDSERVE_URL)
+	chmod +x source/mdserve
+
+override_dh_auto_install:
+	install -D -m 755 source/mdserve debian/mdserve/usr/bin/mdserve
+
+override_dh_auto_clean:
+	rm -rf source
+
+override_dh_strip:
+	# Skip stripping pre-built binaries
+
+override_dh_shlibdeps:
+	# Skip shared library dependency detection for pre-built binary

@@ -1,0 +1,12 @@
+Source: neovim
+Section: editors
+Maintainer: Local Builder <builder@localhost>
+Build-Depends: debhelper-compat (= 13), curl
+Homepage: https://github.com/neovim/neovim
+
+Package: neovim
+Architecture: amd64
+Description: Vim-fork focused on extensibility and usability.
+ Neovim is a refactor, and sometimes redactor, in the tradition of Vim.
+ It is not a rewrite but a continuation and extension of Vim. It features
+ modern defaults, a built-in LSP client, and Lua scripting support.

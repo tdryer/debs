@@ -1,0 +1,31 @@
+#!/usr/bin/make -f
+
+PKG_VERSION := $(or $(PKG_VERSION),$(error PKG_VERSION not set))
+NVIM_TARBALL := nvim-$(PKG_VERSION).tar.gz
+NVIM_URL := https://github.com/neovim/neovim/releases/download/v$(PKG_VERSION)/nvim-linux-x86_64.tar.gz
+%:
+	dh $@
+
+override_dh_auto_build:
+	curl -sL -o $(NVIM_TARBALL) $(NVIM_URL)
+	rm -rf source
+	mkdir -p source
+	tar xzf $(NVIM_TARBALL) -C source --strip-components=1
+
+override_dh_auto_install:
+	install -D -m 755 source/bin/nvim debian/neovim/usr/bin/nvim
+	install -D -m 644 source/share/man/man1/nvim.1 debian/neovim/usr/share/man/man1/nvim.1
+	mkdir -p debian/neovim/usr/lib
+	cp -r source/lib/nvim debian/neovim/usr/lib/nvim
+	cp -r source/share/nvim debian/neovim/usr/share/nvim
+	install -D -m 644 source/share/icons/hicolor/128x128/apps/nvim.png debian/neovim/usr/share/icons/hicolor/128x128/apps/nvim.png
+	install -D -m 644 source/share/applications/nvim.desktop debian/neovim/usr/share/applications/nvim.desktop
+
+override_dh_auto_clean:
+	rm -rf $(NVIM_TARBALL) source
+
+override_dh_strip:
+	# Skip stripping pre-built binaries
+
+override_dh_shlibdeps:
+	# Skip shared library dependency detection for pre-built binary

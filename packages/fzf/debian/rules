@@ -1,0 +1,37 @@
+#!/usr/bin/make -f
+
+PKG_VERSION := $(or $(PKG_VERSION),$(error PKG_VERSION not set))
+FZF_TARBALL := fzf-$(PKG_VERSION).tar.gz
+FZF_URL := https://github.com/junegunn/fzf/releases/download/v$(PKG_VERSION)/fzf-$(PKG_VERSION)-linux_amd64.tar.gz
+FZF_SRC_TARBALL := fzf-$(PKG_VERSION)-src.tar.gz
+FZF_SRC_URL := https://github.com/junegunn/fzf/archive/refs/tags/v$(PKG_VERSION).tar.gz
+
+%:
+	dh $@
+
+override_dh_auto_build:
+	curl -sL -o $(FZF_TARBALL) $(FZF_URL)
+	curl -sL -o $(FZF_SRC_TARBALL) $(FZF_SRC_URL)
+	rm -rf source
+	mkdir -p source/src
+	tar xzf $(FZF_TARBALL) -C source
+	tar xzf $(FZF_SRC_TARBALL) --strip-components=1 -C source/src
+
+override_dh_auto_install:
+	install -D -m 755 source/fzf debian/fzf/usr/bin/fzf
+	install -D -m 644 source/src/man/man1/fzf.1 debian/fzf/usr/share/man/man1/fzf.1
+	install -D -m 644 source/src/man/man1/fzf-tmux.1 debian/fzf/usr/share/man/man1/fzf-tmux.1
+	install -D -m 644 source/src/shell/completion.bash debian/fzf/usr/share/bash-completion/completions/fzf
+	install -D -m 644 source/src/shell/completion.zsh debian/fzf/usr/share/zsh/vendor-completions/_fzf
+	install -D -m 644 source/src/shell/key-bindings.bash debian/fzf/usr/share/doc/fzf/key-bindings.bash
+	install -D -m 644 source/src/shell/key-bindings.zsh debian/fzf/usr/share/doc/fzf/key-bindings.zsh
+	install -D -m 644 source/src/shell/key-bindings.fish debian/fzf/usr/share/doc/fzf/key-bindings.fish
+
+override_dh_auto_clean:
+	rm -rf $(FZF_TARBALL) $(FZF_SRC_TARBALL) source
+
+override_dh_strip:
+	# Skip stripping pre-built binaries
+
+override_dh_shlibdeps:
+	# Skip shared library dependency detection for pre-built binary

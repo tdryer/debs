@@ -1,0 +1,12 @@
+Source: kitty
+Section: x11
+Maintainer: Local Builder <builder@localhost>
+Build-Depends: debhelper-compat (= 13), curl, xz-utils
+Homepage: https://github.com/kovidgoyal/kitty
+
+Package: kitty
+Architecture: amd64
+Description: The fast, feature-rich, GPU based terminal emulator.
+ kitty is a fast, feature-rich, cross-platform, GPU based terminal emulator.
+ It supports modern terminal features like graphics, ligatures, and true
+ color, with a scriptable kitten framework for extending functionality.

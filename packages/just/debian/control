@@ -1,0 +1,12 @@
+Source: just
+Section: misc
+Maintainer: Local Builder <builder@localhost>
+Build-Depends: debhelper-compat (= 13), curl
+Homepage: https://github.com/casey/just
+
+Package: just
+Architecture: amd64
+Description: Just a command runner.
+ just is a handy way to save and run project-specific commands. Commands,
+ called recipes, are stored in a file called justfile with a syntax
+ inspired by make.

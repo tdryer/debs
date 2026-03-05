@@ -1,0 +1,12 @@
+Source: typos
+Section: misc
+Maintainer: Local Builder <builder@localhost>
+Build-Depends: debhelper-compat (= 13), curl
+Homepage: https://github.com/crate-ci/typos
+
+Package: typos
+Architecture: amd64
+Description: Source code spell checker.
+ typos is a source code spell checker that finds and corrects common
+ typos in source code, filenames, and documentation. It is fast,
+ low false-positive, and designed for use in CI pipelines.

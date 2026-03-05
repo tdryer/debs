@@ -1,0 +1,11 @@
+Source: diff2html
+Section: misc
+Maintainer: Local Builder <builder@localhost>
+Build-Depends: debhelper-compat (= 13), curl
+Homepage: https://github.com/tdryer/diff2html-rs
+
+Package: diff2html
+Architecture: amd64
+Description: Generate HTML from unified diffs.
+ diff2html converts unified diff output into a side-by-side or
+ inline HTML view, useful for code review and change visualization.

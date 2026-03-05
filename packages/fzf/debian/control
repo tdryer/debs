@@ -1,0 +1,12 @@
+Source: fzf
+Section: misc
+Maintainer: Local Builder <builder@localhost>
+Build-Depends: debhelper-compat (= 13), curl
+Homepage: https://github.com/junegunn/fzf
+
+Package: fzf
+Architecture: amd64
+Description: A general-purpose command-line fuzzy finder.
+ fzf is a general-purpose command-line fuzzy finder. It is an interactive
+ filter program for any kind of list, with support for fuzzy matching,
+ preview windows, and integration with shell key bindings.

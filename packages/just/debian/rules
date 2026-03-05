@@ -1,0 +1,29 @@
+#!/usr/bin/make -f
+
+PKG_VERSION := $(or $(PKG_VERSION),$(error PKG_VERSION not set))
+JUST_TARBALL := just-$(PKG_VERSION).tar.gz
+JUST_URL := https://github.com/casey/just/releases/download/$(PKG_VERSION)/just-$(PKG_VERSION)-x86_64-unknown-linux-musl.tar.gz
+%:
+	dh $@
+
+override_dh_auto_build:
+	curl -sL -o $(JUST_TARBALL) $(JUST_URL)
+	rm -rf source
+	mkdir -p source
+	tar xzf $(JUST_TARBALL) -C source
+
+override_dh_auto_install:
+	install -D -m 755 source/just debian/just/usr/bin/just
+	install -D -m 644 source/just.1 debian/just/usr/share/man/man1/just.1
+	install -D -m 644 source/completions/just.bash debian/just/usr/share/bash-completion/completions/just
+	install -D -m 644 source/completions/just.zsh debian/just/usr/share/zsh/vendor-completions/_just
+	install -D -m 644 source/completions/just.fish debian/just/usr/share/fish/vendor_completions.d/just.fish
+
+override_dh_auto_clean:
+	rm -rf $(JUST_TARBALL) source
+
+override_dh_strip:
+	# Skip stripping pre-built binaries
+
+override_dh_shlibdeps:
+	# Skip shared library dependency detection for pre-built binary

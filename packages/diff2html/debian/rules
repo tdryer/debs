@@ -1,0 +1,25 @@
+#!/usr/bin/make -f
+
+PKG_VERSION := $(or $(PKG_VERSION),$(error PKG_VERSION not set))
+DIFF2HTML_URL := https://github.com/tdryer/diff2html-rs/releases/download/$(PKG_VERSION)/diff2html-x86_64-unknown-linux-musl
+
+%:
+	dh $@
+
+override_dh_auto_build:
+	rm -rf source
+	mkdir -p source
+	curl -sL -o source/diff2html $(DIFF2HTML_URL)
+	chmod +x source/diff2html
+
+override_dh_auto_install:
+	install -D -m 755 source/diff2html debian/diff2html/usr/bin/diff2html
+
+override_dh_auto_clean:
+	rm -rf source
+
+override_dh_strip:
+	# Skip stripping pre-built binaries
+
+override_dh_shlibdeps:
+	# Skip shared library dependency detection for pre-built binary

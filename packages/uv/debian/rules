@@ -1,0 +1,26 @@
+#!/usr/bin/make -f
+
+PKG_VERSION := $(or $(PKG_VERSION),$(error PKG_VERSION not set))
+UV_TARBALL := uv-$(PKG_VERSION).tar.gz
+UV_URL := https://github.com/astral-sh/uv/releases/download/$(PKG_VERSION)/uv-x86_64-unknown-linux-gnu.tar.gz
+%:
+	dh $@
+
+override_dh_auto_build:
+	curl -sL -o $(UV_TARBALL) $(UV_URL)
+	rm -rf source
+	mkdir -p source
+	tar xzf $(UV_TARBALL) --strip-components=1 -C source
+
+override_dh_auto_install:
+	install -D -m 755 source/uv debian/uv/usr/bin/uv
+	install -D -m 755 source/uvx debian/uv/usr/bin/uvx
+
+override_dh_auto_clean:
+	rm -rf $(UV_TARBALL) source
+
+override_dh_strip:
+	# Skip stripping pre-built binaries
+
+override_dh_shlibdeps:
+	# Skip shared library dependency detection for pre-built binary

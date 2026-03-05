@@ -1,0 +1,78 @@
+# Ansible playbook to set up a systemd service and timer to build packages
+# nightly and make them available via local-apt-repository.
+#
+# ansible-playbook --ask-become-pass playbook.yaml
+
+---
+- name: Set up debs with local-apt-repository
+  hosts: localhost
+  connection: local
+
+  vars:
+    repo_owner: "{{ ansible_user | default(ansible_user_id) }}"
+    unit_name: debs
+    build_time: "06:00"
+
+  tasks:
+
+    - name: Install local-apt-repository
+      become: true
+      ansible.builtin.apt:
+        name: local-apt-repository
+        state: present
+
+    - name: Configure local-apt-repository ownership
+      become: true
+      ansible.builtin.file:
+        path: /srv/local-apt-repository
+        state: directory
+        owner: "{{ repo_owner }}"
+        group: "{{ repo_owner }}"
+        mode: "0755"
+
+    - name: Create service unit
+      ansible.builtin.copy:
+        dest: "{{ ansible_env.HOME }}/.config/systemd/user/{{ unit_name }}.service"
+        mode: '0644'
+        content: |
+          [Unit]
+          Description=Build debs
+          OnFailure={{ unit_name }}-failure-notify.service
+          [Service]
+          Type=oneshot
+          WorkingDirectory={{ playbook_dir }}
+          # Use bash to work around systemd/systemd#19751.
+          ExecStart=/usr/bin/bash -c 'just build 2>&1 | cat'
+
+    - name: Create failure notification service unit
+      ansible.builtin.copy:
+        dest: "{{ ansible_env.HOME }}/.config/systemd/user/{{ unit_name }}-failure-notify.service"
+        mode: '0644'
+        content: |
+          [Unit]
+          Description=Notify when debs build fails
+          [Service]
+          Type=oneshot
+          ExecStart=notify-send --urgency=critical 'debs build failed' \
+            'Run: journalctl --user -u {{ unit_name }}.service'
+
+    - name: Create timer unit
+      ansible.builtin.copy:
+        dest: "{{ ansible_env.HOME }}/.config/systemd/user/{{ unit_name }}.timer"
+        mode: '0644'
+        content: |
+          [Unit]
+          Description=Build debs
+          [Timer]
+          OnCalendar=*-*-* {{ build_time }}:00
+          Persistent=false
+          [Install]
+          WantedBy=timers.target
+
+    - name: Enable and start notification timer
+      ansible.builtin.systemd:
+        name: "{{ unit_name }}.timer"
+        daemon_reload: true
+        enabled: true
+        state: started
+        scope: user
