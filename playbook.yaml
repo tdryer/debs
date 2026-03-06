@@ -42,7 +42,7 @@
           Type=oneshot
           WorkingDirectory={{ playbook_dir }}
           # Use bash to work around systemd/systemd#19751.
-          ExecStart=/usr/bin/bash -c 'just build 2>&1 | cat'
+          ExecStart=/usr/bin/bash -c 'set -o pipefail; just build 2>&1 | cat'
 
     - name: Create failure notification service unit
       ansible.builtin.copy:
