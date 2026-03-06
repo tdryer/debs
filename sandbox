@@ -30,7 +30,7 @@ CONTAINERFILE = """\
 FROM docker.io/ubuntu:noble
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-        build-essential ca-certificates curl debhelper jq less procps ripgrep xz-utils && \
+        build-essential ca-certificates curl debhelper jq less procps python3 ripgrep xz-utils && \
     apt-get clean
 """
 
