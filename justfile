@@ -26,31 +26,31 @@ _build pkg version:
 build-uv: (_build "uv" `common/get-latest-version astral-sh/uv`)
 
 # Build mdserve Debian package
-build-mdserve: (_build "mdserve" `common/get-latest-version jfernandez/mdserve v`)
+build-mdserve: (_build "mdserve" `common/get-latest-version jfernandez/mdserve --strip-prefix v`)
 
 # Build just Debian package
 build-just: (_build "just" `common/get-latest-version casey/just`)
 
 # Build neovim Debian package
-build-neovim: (_build "neovim" `common/get-latest-version neovim/neovim v`)
+build-neovim: (_build "neovim" `common/get-latest-version neovim/neovim --strip-prefix v`)
 
 # Build kitty Debian package
-build-kitty: (_build "kitty" `common/get-latest-version kovidgoyal/kitty v`)
+build-kitty: (_build "kitty" `common/get-latest-version kovidgoyal/kitty --strip-prefix v`)
 
 # Build codex Debian package
-build-codex: (_build "codex" `common/get-latest-version openai/codex rust-v`)
+build-codex: (_build "codex" `common/get-latest-version openai/codex --strip-prefix rust-v`)
 
 # Build copilot Debian package
-build-copilot: (_build "copilot" `common/get-latest-version github/copilot-cli v`)
+build-copilot: (_build "copilot" `common/get-latest-version github/copilot-cli --strip-prefix v`)
 
 # Build diff2html Debian package
 build-diff2html: (_build "diff2html" `common/get-latest-version tdryer/diff2html-rs`)
 
 # Build fzf Debian package
-build-fzf: (_build "fzf" `common/get-latest-version junegunn/fzf v`)
+build-fzf: (_build "fzf" `common/get-latest-version junegunn/fzf --strip-prefix v`)
 
 # Build typos Debian package
-build-typos: (_build "typos" `common/get-latest-version crate-ci/typos v`)
+build-typos: (_build "typos" `common/get-latest-version crate-ci/typos --strip-prefix v`)
 
 # Remove build artifacts
 clean:
