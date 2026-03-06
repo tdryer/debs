@@ -1,0 +1,114 @@
+#!/usr/bin/env python3
+
+"""Build and run a sandbox container for development."""
+
+import os
+import shutil
+import subprocess
+import sys
+
+PROJECT_NAME = "debs"
+IMAGE_NAME = f"{PROJECT_NAME}-devel"
+
+BINARIES = [
+    "kitten",
+    "copilot",
+    "just",
+    "claude",
+    "codex",
+]
+CONFIGS = [
+    ".copilot/config.json",
+    ".claude",
+    ".claude.json",
+    ".codex",
+    ".gitconfig",
+    ".gitconfig.private",
+]
+
+CONTAINERFILE = """\
+FROM docker.io/ubuntu:noble
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        build-essential ca-certificates curl debhelper jq less procps ripgrep xz-utils && \
+    apt-get clean
+"""
+
+
+def secret_tool_lookup() -> str:
+    result = subprocess.run(
+        ["secret-tool", "lookup", "service", "copilot-cli"],
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    return result.stdout.strip()
+
+
+def resolve_mounts(home: str, cwd: str) -> list[tuple[str, str, str | None]]:
+    """Return available mounts, skipping missing binaries and paths."""
+    mounts: list[tuple[str, str, str | None]] = [
+        (cwd, "/devel", None),
+    ]
+
+    for name in BINARIES:
+        path = shutil.which(name)
+        if path:
+            mounts.append((path, f"/usr/local/bin/{name}", "ro"))
+        else:
+            print(f"Skipping {name!r} (not found in PATH)")
+
+    for name in CONFIGS:
+        src = f"{home}/{name}"
+        if os.path.exists(src):
+            mounts.append((src, f"/root/{name}", None))
+        else:
+            print(f"Skipping {src!r} (not found)")
+
+    return mounts
+
+
+def main():
+    home = os.environ["HOME"]
+    cwd = os.getcwd()
+
+    mounts = resolve_mounts(home, cwd)
+
+    mount_args = []
+    for src, target, mode in mounts:
+        opt = f"type=bind,src={src},target={target}"
+        if mode:
+            opt += f",{mode}"
+        mount_args += ["--mount", opt]
+
+    # Build the image
+    build = subprocess.run(
+        ["podman", "build", "-f", "-", "-t", IMAGE_NAME, "."],
+        input=CONTAINERFILE,
+        text=True,
+    )
+    if build.returncode != 0:
+        sys.exit(build.returncode)
+
+    # Run the container
+    cmd = [
+        "podman",
+        "run",
+        "-it",
+        "--rm",
+        "--hostname=devel",
+        "--workdir=/devel",
+        *mount_args,
+        f"--env=GITHUB_TOKEN={secret_tool_lookup()}",
+        f"--env=TERM={os.environ.get('TERM', 'xterm')}",
+        "--env=IS_SANDBOX=1",
+        "--env=TZ=America/Vancouver",
+        IMAGE_NAME,
+        "kitten",
+        "run-shell",
+    ]
+    sys.exit(subprocess.call(cmd))
+
+
+if __name__ == "__main__":
+    main()
