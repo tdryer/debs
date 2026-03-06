@@ -15,11 +15,14 @@
 
   tasks:
 
-    - name: Install local-apt-repository
+    - name: Install dependencies
       become: true
       ansible.builtin.apt:
-        name: local-apt-repository
+        name: "{{ item }}"
         state: present
+      loop:
+        - local-apt-repository
+        - debhelper
 
     - name: Configure local-apt-repository ownership
       become: true
