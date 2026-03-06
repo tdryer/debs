@@ -1,0 +1,28 @@
+#!/usr/bin/make -f
+
+PKG_VERSION := $(or $(PKG_VERSION),$(error PKG_VERSION not set))
+GHOSTTY_TAG := $(PKG_VERSION)-0-ppa1
+GHOSTTY_DEB := ghostty_$(PKG_VERSION)-0.ppa1_amd64_24.04.deb
+GHOSTTY_URL := https://github.com/mkasberg/ghostty-ubuntu/releases/download/$(GHOSTTY_TAG)/$(GHOSTTY_DEB)
+
+%:
+	dh $@
+
+override_dh_auto_build:
+	curl -sL -o $(GHOSTTY_DEB) $(GHOSTTY_URL)
+	rm -rf source
+	mkdir -p source
+	dpkg-deb -x $(GHOSTTY_DEB) source
+
+override_dh_auto_install:
+	mkdir -p debian/ghostty
+	cp -r source/usr debian/ghostty/
+
+override_dh_auto_clean:
+	rm -rf $(GHOSTTY_DEB) source
+
+override_dh_strip:
+	# Skip stripping pre-built binaries
+
+override_dh_shlibdeps:
+	# Skip shared library dependency detection for pre-built binaries

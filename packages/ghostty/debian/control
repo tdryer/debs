@@ -1,0 +1,12 @@
+Source: ghostty
+Section: x11
+Maintainer: Local Builder <builder@localhost>
+Build-Depends: debhelper-compat (= 13), curl
+Homepage: https://github.com/mkasberg/ghostty-ubuntu
+
+Package: ghostty
+Architecture: amd64
+Description: A fast, feature-rich, and cross-platform terminal emulator.
+ Ghostty is a fast, feature-rich, and cross-platform terminal emulator that
+ uses platform-native UI and GPU acceleration. It is developed by Mitchell
+ Hashimoto and packaged for Ubuntu by the community.

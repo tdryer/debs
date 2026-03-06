@@ -6,7 +6,7 @@ default:
     just --list
 
 # Build all Debian packages
-build: build-uv build-mdserve build-just build-neovim build-kitty build-codex build-copilot build-diff2html build-fzf build-typos
+build: build-uv build-mdserve build-just build-neovim build-kitty build-codex build-copilot build-diff2html build-fzf build-typos build-ghostty
 
 # Generic build recipe
 _build pkg version:
@@ -52,6 +52,9 @@ build-fzf: (_build "fzf" `common/get-latest-version junegunn/fzf --strip-prefix 
 # Build typos Debian package
 build-typos: (_build "typos" `common/get-latest-version crate-ci/typos --strip-prefix v`)
 
+# Build ghostty Debian package
+build-ghostty: (_build "ghostty" `common/get-latest-version mkasberg/ghostty-ubuntu | sed 's/-0-ppa[0-9]*//'`)
+
 # Remove build artifacts
 clean:
     rm -f {{pkg_dir}}/*.deb {{pkg_dir}}/*.buildinfo {{pkg_dir}}/*.changes
@@ -59,7 +62,8 @@ clean:
         pkg=$(basename ${pkg%%/debian/rules}); \
         rm -rf {{pkg_dir}}/$pkg/debian/.debhelper/ {{pkg_dir}}/$pkg/debian/debhelper-build-stamp \
                {{pkg_dir}}/$pkg/debian/files {{pkg_dir}}/$pkg/debian/*.substvars \
-               {{pkg_dir}}/$pkg/debian/$pkg/ {{pkg_dir}}/$pkg/debian/changelog; \
+               {{pkg_dir}}/$pkg/debian/$pkg/ {{pkg_dir}}/$pkg/debian/changelog \
+               {{pkg_dir}}/$pkg/debian/*.debhelper {{pkg_dir}}/$pkg/*.deb; \
     done
     rm -rf {{pkg_dir}}/*/source/ {{pkg_dir}}/*/*.tar.gz
 
