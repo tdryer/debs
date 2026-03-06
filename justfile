@@ -9,8 +9,8 @@ default:
 build: build-uv build-mdserve build-just build-neovim build-kitty build-codex build-copilot build-diff2html build-fzf build-typos
 
 # Generic build recipe
-[script]
 _build pkg version:
+    #!/usr/bin/env bash
     set -eu
     if [ -f {{output_dir}}/{{pkg}}_{{version}}-1_amd64.deb ]; then
         echo "{{pkg}} {{version}} already built, skipping."
