@@ -23,37 +23,37 @@ _build pkg version:
     mv "{{pkg_dir}}/{{pkg}}_{{version}}-1_amd64.deb" "{{output_dir}}/"
 
 # Build uv Debian package
-build-uv: (_build "uv" `common/get-latest-version astral-sh/uv`)
+build-uv: (_build "uv" `gh release list --repo astral-sh/uv --exclude-drafts --exclude-pre-releases --limit 1 --json tagName --jq '.[0].tagName'`)
 
 # Build mdserve Debian package
-build-mdserve: (_build "mdserve" `common/get-latest-version jfernandez/mdserve --strip-prefix v`)
+build-mdserve: (_build "mdserve" `gh release list --repo jfernandez/mdserve --exclude-drafts --exclude-pre-releases --limit 1 --json tagName --jq '.[0].tagName | ltrimstr("v")'`)
 
 # Build just Debian package
-build-just: (_build "just" `common/get-latest-version casey/just`)
+build-just: (_build "just" `gh release list --repo casey/just --exclude-drafts --exclude-pre-releases --limit 1 --json tagName --jq '.[0].tagName'`)
 
 # Build neovim Debian package
-build-neovim: (_build "neovim" `common/get-latest-version neovim/neovim --strip-prefix v`)
+build-neovim: (_build "neovim" `gh release list --repo neovim/neovim --exclude-drafts --exclude-pre-releases --limit 1 --json tagName --jq '.[0].tagName | ltrimstr("v")'`)
 
 # Build kitty Debian package
-build-kitty: (_build "kitty" `common/get-latest-version kovidgoyal/kitty --strip-prefix v`)
+build-kitty: (_build "kitty" `gh release list --repo kovidgoyal/kitty --exclude-drafts --exclude-pre-releases --limit 1 --json tagName --jq '.[0].tagName | ltrimstr("v")'`)
 
 # Build codex Debian package
-build-codex: (_build "codex" `common/get-latest-version openai/codex --strip-prefix rust-v`)
+build-codex: (_build "codex" `gh release list --repo openai/codex --exclude-drafts --exclude-pre-releases --limit 1 --json tagName --jq '.[0].tagName | ltrimstr("rust-v")'`)
 
 # Build copilot Debian package
-build-copilot: (_build "copilot" `common/get-latest-version github/copilot-cli --strip-prefix v`)
+build-copilot: (_build "copilot" `gh release list --repo github/copilot-cli --exclude-drafts --exclude-pre-releases --limit 1 --json tagName --jq '.[0].tagName | ltrimstr("v")'`)
 
 # Build diff2html Debian package
-build-diff2html: (_build "diff2html" `common/get-latest-version tdryer/diff2html-rs`)
+build-diff2html: (_build "diff2html" `gh release list --repo tdryer/diff2html-rs --exclude-drafts --exclude-pre-releases --limit 1 --json tagName --jq '.[0].tagName'`)
 
 # Build fzf Debian package
-build-fzf: (_build "fzf" `common/get-latest-version junegunn/fzf --strip-prefix v`)
+build-fzf: (_build "fzf" `gh release list --repo junegunn/fzf --exclude-drafts --exclude-pre-releases --limit 1 --json tagName --jq '.[0].tagName | ltrimstr("v")'`)
 
 # Build typos Debian package
-build-typos: (_build "typos" `common/get-latest-version crate-ci/typos --strip-prefix v`)
+build-typos: (_build "typos" `gh release list --repo crate-ci/typos --exclude-drafts --exclude-pre-releases --limit 1 --json tagName --jq '.[0].tagName | ltrimstr("v")'`)
 
 # Build ghostty Debian package
-build-ghostty: (_build "ghostty" `common/get-latest-version mkasberg/ghostty-ubuntu | sed 's/-0-ppa[0-9]*//'`)
+build-ghostty: (_build "ghostty" `gh release list --repo mkasberg/ghostty-ubuntu --exclude-drafts --exclude-pre-releases --limit 1 --json tagName --jq '.[0].tagName | gsub("-0-ppa[0-9]*$"; "")'`)
 
 # Remove build artifacts
 clean:

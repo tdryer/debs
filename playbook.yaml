@@ -23,6 +23,7 @@
       loop:
         - local-apt-repository
         - debhelper
+        - gh
 
     - name: Configure local-apt-repository ownership
       become: true
