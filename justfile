@@ -6,7 +6,7 @@ default:
     just --list
 
 # Build all Debian packages
-build: build-uv build-mdserve build-just build-neovim build-kitty build-codex build-copilot build-diff2html build-fzf build-typos build-ghostty
+build: build-uv build-mdserve build-just build-neovim build-kitty build-codex build-copilot build-diff2html build-fzf build-typos build-ghostty build-fence
 
 # Generic build recipe
 _build pkg version:
@@ -54,6 +54,9 @@ build-typos: (_build "typos" `gh release list --repo crate-ci/typos --exclude-dr
 
 # Build ghostty Debian package
 build-ghostty: (_build "ghostty" `gh release list --repo mkasberg/ghostty-ubuntu --exclude-drafts --exclude-pre-releases --limit 1 --json tagName --jq '.[0].tagName | gsub("-0-ppa[0-9]*$"; "")'`)
+
+# Build fence Debian package
+build-fence: (_build "fence" `gh release list --repo Use-Tusk/fence --exclude-drafts --exclude-pre-releases --limit 1 --json tagName --jq '.[0].tagName | ltrimstr("v")'`)
 
 # Remove build artifacts
 clean:

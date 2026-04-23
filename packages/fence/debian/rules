@@ -1,0 +1,26 @@
+#!/usr/bin/make -f
+
+PKG_VERSION := $(or $(PKG_VERSION),$(error PKG_VERSION not set))
+FENCE_TARBALL := fence-$(PKG_VERSION).tar.gz
+FENCE_URL := https://github.com/Use-Tusk/fence/releases/download/v$(PKG_VERSION)/fence_$(PKG_VERSION)_Linux_x86_64.tar.gz
+
+%:
+	dh $@
+
+override_dh_auto_build:
+	curl -sL -o $(FENCE_TARBALL) $(FENCE_URL)
+	rm -rf source
+	mkdir -p source
+	tar xzf $(FENCE_TARBALL) -C source
+
+override_dh_auto_install:
+	install -D -m 755 source/fence debian/fence/usr/bin/fence
+
+override_dh_auto_clean:
+	rm -rf $(FENCE_TARBALL) source
+
+override_dh_strip:
+	# Skip stripping pre-built binaries
+
+override_dh_shlibdeps:
+	# Skip shared library dependency detection for pre-built binary

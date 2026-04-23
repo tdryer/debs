@@ -1,0 +1,12 @@
+Source: fence
+Section: misc
+Maintainer: Local Builder <builder@localhost>
+Build-Depends: debhelper-compat (= 13), curl
+Homepage: https://github.com/Use-Tusk/fence
+
+Package: fence
+Architecture: amd64
+Description: Lightweight sandbox for running commands with network and filesystem restrictions.
+ Fence wraps commands in a sandbox that blocks network access by default
+ and restricts filesystem operations based on configurable rules. It's most
+ useful for running semi-trusted code with controlled side effects.
