@@ -1,7 +1,7 @@
 Source: fence
 Section: misc
 Maintainer: Local Builder <builder@localhost>
-Build-Depends: debhelper-compat (= 13), curl
+Build-Depends: debhelper-compat (= 13), curl, dh-apparmor
 Homepage: https://github.com/Use-Tusk/fence
 
 Package: fence

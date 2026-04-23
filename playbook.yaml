@@ -23,6 +23,7 @@
       loop:
         - local-apt-repository
         - debhelper
+        - dh-apparmor
         - gh
 
     - name: Configure local-apt-repository ownership
