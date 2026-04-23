@@ -16,6 +16,8 @@ BINARIES = [
     "just",
     "claude",
     "codex",
+    "opencode",
+    "gh",
 ]
 CONFIGS = [
     ".copilot/config.json",
@@ -24,6 +26,11 @@ CONFIGS = [
     ".codex",
     ".gitconfig",
     ".gitconfig.private",
+    ".cache/opencode",
+    ".config/opencode",
+    ".local/cache/opencode",
+    ".local/share/opencode",
+    ".local/state/opencode",
 ]
 
 CONTAINERFILE = """\
