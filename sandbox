@@ -28,7 +28,6 @@ CONFIGS = [
     ".gitconfig.private",
     ".cache/opencode",
     ".config/opencode",
-    ".local/cache/opencode",
     ".local/share/opencode",
     ".local/state/opencode",
 ]
