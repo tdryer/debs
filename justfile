@@ -19,7 +19,7 @@ _build pkg version:
     fi
     printf '{{pkg}} ({{version}}-1) unstable; urgency=medium\n\n  * Package {{pkg}} {{version}} from upstream release binaries.\n\n -- Local Builder <builder@localhost>  %s\n' \
         "$(date -R)" > {{pkg_dir}}/{{pkg}}/debian/changelog
-    (cd {{pkg_dir}}/{{pkg}} && PKG_VERSION={{version}} dpkg-buildpackage -us -uc -b)
+    (cd {{pkg_dir}}/{{pkg}} && PKG_VERSION={{version}} dpkg-buildpackage -us -uc -b --post-clean)
     mkdir -p "{{output_dir}}"
     mv "{{pkg_dir}}/{{pkg}}_{{version}}-1_amd64.deb" "{{output_dir}}/"
 
