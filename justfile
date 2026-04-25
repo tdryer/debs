@@ -1,5 +1,6 @@
 output_dir := "/srv/local-apt-repository"
 pkg_dir := "packages"
+force := "false"
 
 # Show recipes
 default:
@@ -12,7 +13,7 @@ build: build-uv build-mdserve build-just build-neovim build-kitty build-codex bu
 _build pkg version:
     #!/usr/bin/env bash
     set -eu
-    if [ -f {{output_dir}}/{{pkg}}_{{version}}-1_amd64.deb ]; then
+    if [ "{{force}}" != "true" ] && [ -f {{output_dir}}/{{pkg}}_{{version}}-1_amd64.deb ]; then
         echo "{{pkg}} {{version}} already built, skipping."
         exit 0
     fi
