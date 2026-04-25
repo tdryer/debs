@@ -1,0 +1,13 @@
+Source: opencode
+Section: misc
+Maintainer: Local Builder <builder@localhost>
+Build-Depends: debhelper-compat (= 13), curl
+Homepage: https://opencode.ai
+
+Package: opencode
+Architecture: amd64
+Description: The open source AI coding agent.
+ OpenCode is an open source AI coding agent that helps developers
+ write, review, and refactor code. It supports multiple model
+ providers and features an LSP-based approach for deep code
+ understanding.

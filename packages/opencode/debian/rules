@@ -1,0 +1,25 @@
+#!/usr/bin/make -f
+
+PKG_VERSION := $(or $(PKG_VERSION),$(error PKG_VERSION not set))
+OPENCODE_TARBALL := opencode-$(PKG_VERSION).tar.gz
+OPENCODE_URL := https://github.com/anomalyco/opencode/releases/download/v$(PKG_VERSION)/opencode-linux-x64.tar.gz
+%:
+	dh $@
+
+override_dh_auto_build:
+	curl -sL -o $(OPENCODE_TARBALL) $(OPENCODE_URL)
+	rm -rf source
+	mkdir -p source
+	tar xzf $(OPENCODE_TARBALL) -C source
+
+override_dh_auto_install:
+	install -D -m 755 source/opencode debian/opencode/usr/bin/opencode
+
+override_dh_auto_clean:
+	rm -rf $(OPENCODE_TARBALL) source
+
+override_dh_strip:
+	# Skip stripping pre-built binaries
+
+override_dh_shlibdeps:
+	# Skip shared library dependency detection for pre-built binary
