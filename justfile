@@ -7,7 +7,20 @@ default:
     just --list
 
 # Build all Debian packages
-build: build-uv build-mdserve build-just build-neovim build-kitty build-codex build-copilot build-diff2html build-fzf build-typos build-ghostty build-fence build-opencode
+build: \
+    build-codex \
+    build-copilot \
+    build-diff2html \
+    build-fence \
+    build-fzf \
+    build-ghostty \
+    build-just \
+    build-kitty \
+    build-mdserve \
+    build-neovim \
+    build-opencode \
+    build-typos \
+    build-uv
 
 # Generic build recipe
 _build pkg version:
