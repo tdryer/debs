@@ -7,7 +7,7 @@ JUST_URL := https://github.com/casey/just/releases/download/$(PKG_VERSION)/just-
 	dh $@
 
 override_dh_auto_build:
-	curl -sL -o $(JUST_TARBALL) $(JUST_URL)
+	curl --fail --show-error -sL -o $(JUST_TARBALL) $(JUST_URL)
 	rm -rf source
 	mkdir -p source
 	tar xzf $(JUST_TARBALL) -C source

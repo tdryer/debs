@@ -9,7 +9,7 @@ GHOSTTY_URL := https://github.com/mkasberg/ghostty-ubuntu/releases/download/$(GH
 	dh $@
 
 override_dh_auto_build:
-	curl -sL -o $(GHOSTTY_DEB) $(GHOSTTY_URL)
+	curl --fail --show-error -sL -o $(GHOSTTY_DEB) $(GHOSTTY_URL)
 	rm -rf source
 	mkdir -p source
 	dpkg-deb -x $(GHOSTTY_DEB) source

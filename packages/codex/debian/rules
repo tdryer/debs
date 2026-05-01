@@ -8,7 +8,7 @@ CODEX_URL := https://github.com/openai/codex/releases/download/rust-v$(PKG_VERSI
 	dh $@
 
 override_dh_auto_build:
-	curl -sL -o $(CODEX_TARBALL) $(CODEX_URL)
+	curl --fail --show-error -sL -o $(CODEX_TARBALL) $(CODEX_URL)
 	rm -rf source
 	mkdir -p source
 	tar xzf $(CODEX_TARBALL) -C source

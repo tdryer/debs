@@ -8,7 +8,7 @@ FENCE_URL := https://github.com/Use-Tusk/fence/releases/download/v$(PKG_VERSION)
 	dh $@
 
 override_dh_auto_build:
-	curl -sL -o $(FENCE_TARBALL) $(FENCE_URL)
+	curl --fail --show-error -sL -o $(FENCE_TARBALL) $(FENCE_URL)
 	rm -rf source
 	mkdir -p source
 	tar xzf $(FENCE_TARBALL) -C source

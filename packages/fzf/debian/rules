@@ -10,8 +10,8 @@ FZF_SRC_URL := https://github.com/junegunn/fzf/archive/refs/tags/v$(PKG_VERSION)
 	dh $@
 
 override_dh_auto_build:
-	curl -sL -o $(FZF_TARBALL) $(FZF_URL)
-	curl -sL -o $(FZF_SRC_TARBALL) $(FZF_SRC_URL)
+	curl --fail --show-error -sL -o $(FZF_TARBALL) $(FZF_URL)
+	curl --fail --show-error -sL -o $(FZF_SRC_TARBALL) $(FZF_SRC_URL)
 	rm -rf source
 	mkdir -p source/src
 	tar xzf $(FZF_TARBALL) -C source

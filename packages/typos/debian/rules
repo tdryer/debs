@@ -8,7 +8,7 @@ TYPOS_URL := https://github.com/crate-ci/typos/releases/download/v$(PKG_VERSION)
 	dh $@
 
 override_dh_auto_build:
-	curl -sL -o $(TYPOS_TARBALL) $(TYPOS_URL)
+	curl --fail --show-error -sL -o $(TYPOS_TARBALL) $(TYPOS_URL)
 	rm -rf source
 	mkdir -p source
 	tar xzf $(TYPOS_TARBALL) -C source

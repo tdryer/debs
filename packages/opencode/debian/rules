@@ -7,7 +7,7 @@ OPENCODE_URL := https://github.com/anomalyco/opencode/releases/download/v$(PKG_V
 	dh $@
 
 override_dh_auto_build:
-	curl -sL -o $(OPENCODE_TARBALL) $(OPENCODE_URL)
+	curl --fail --show-error -sL -o $(OPENCODE_TARBALL) $(OPENCODE_URL)
 	rm -rf source
 	mkdir -p source
 	tar xzf $(OPENCODE_TARBALL) -C source

@@ -7,7 +7,7 @@ NVIM_URL := https://github.com/neovim/neovim/releases/download/v$(PKG_VERSION)/n
 	dh $@
 
 override_dh_auto_build:
-	curl -sL -o $(NVIM_TARBALL) $(NVIM_URL)
+	curl --fail --show-error -sL -o $(NVIM_TARBALL) $(NVIM_URL)
 	rm -rf source
 	mkdir -p source
 	tar xzf $(NVIM_TARBALL) -C source --strip-components=1

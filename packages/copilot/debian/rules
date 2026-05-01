@@ -8,7 +8,7 @@ COPILOT_URL := https://github.com/github/copilot-cli/releases/download/v$(PKG_VE
 	dh $@
 
 override_dh_auto_build:
-	curl -sL -o $(COPILOT_TARBALL) $(COPILOT_URL)
+	curl --fail --show-error -sL -o $(COPILOT_TARBALL) $(COPILOT_URL)
 	rm -rf source
 	mkdir -p source
 	tar xzf $(COPILOT_TARBALL) -C source

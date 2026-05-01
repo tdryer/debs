@@ -7,7 +7,7 @@ KITTY_URL := https://github.com/kovidgoyal/kitty/releases/download/v$(PKG_VERSIO
 	dh $@
 
 override_dh_auto_build:
-	curl -sL -o $(KITTY_TARBALL) $(KITTY_URL)
+	curl --fail --show-error -sL -o $(KITTY_TARBALL) $(KITTY_URL)
 	rm -rf source
 	mkdir -p source
 	tar xf $(KITTY_TARBALL) -C source

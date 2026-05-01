@@ -9,7 +9,7 @@ DIFF2HTML_URL := https://github.com/tdryer/diff2html-rs/releases/download/$(PKG_
 override_dh_auto_build:
 	rm -rf source
 	mkdir -p source
-	curl -sL -o source/diff2html $(DIFF2HTML_URL)
+	curl --fail --show-error -sL -o source/diff2html $(DIFF2HTML_URL)
 	chmod +x source/diff2html
 
 override_dh_auto_install:

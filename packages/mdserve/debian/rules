@@ -9,7 +9,7 @@ MDSERVE_URL := https://github.com/jfernandez/mdserve/releases/download/v$(PKG_VE
 override_dh_auto_build:
 	rm -rf source
 	mkdir -p source
-	curl -sL -o source/mdserve $(MDSERVE_URL)
+	curl --fail --show-error -sL -o source/mdserve $(MDSERVE_URL)
 	chmod +x source/mdserve
 
 override_dh_auto_install:

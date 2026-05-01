@@ -7,7 +7,7 @@ UV_URL := https://github.com/astral-sh/uv/releases/download/$(PKG_VERSION)/uv-x8
 	dh $@
 
 override_dh_auto_build:
-	curl -sL -o $(UV_TARBALL) $(UV_URL)
+	curl --fail --show-error -sL -o $(UV_TARBALL) $(UV_URL)
 	rm -rf source
 	mkdir -p source
 	tar xzf $(UV_TARBALL) --strip-components=1 -C source
