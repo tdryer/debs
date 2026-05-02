@@ -20,7 +20,8 @@ build: \
     build-neovim \
     build-opencode \
     build-typos \
-    build-uv
+    build-uv \
+    build-zed
 
 # Generic build recipe
 _build pkg version:
@@ -74,6 +75,9 @@ build-fence: (_build "fence" `gh release list --repo Use-Tusk/fence --exclude-dr
 
 # Build opencode Debian package
 build-opencode: (_build "opencode" `gh release list --repo anomalyco/opencode --exclude-drafts --exclude-pre-releases --limit 1 --json tagName --jq '.[0].tagName | ltrimstr("v")'`)
+
+# Build zed Debian package
+build-zed: (_build "zed" `gh release list --repo zed-industries/zed --exclude-drafts --exclude-pre-releases --limit 1 --json tagName --jq '.[0].tagName | ltrimstr("v")'`)
 
 # Remove build artifacts
 clean:

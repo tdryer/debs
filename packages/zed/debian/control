@@ -1,0 +1,13 @@
+Source: zed
+Section: misc
+Maintainer: Local Builder <builder@localhost>
+Build-Depends: debhelper-compat (= 13), curl
+Homepage: https://zed.dev
+
+Package: zed
+Architecture: amd64
+Description: Code editor built for humans.
+ Zed is a high-performance, collaborative code editor built for serious
+ workflows. It's designed to be fast, beautiful, and productive, with
+ features like built-in AI assistance, Git integration, and support
+ for over 50 programming languages.

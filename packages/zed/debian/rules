@@ -1,0 +1,34 @@
+#!/usr/bin/make -f
+
+PKG_VERSION := $(or $(PKG_VERSION),$(error PKG_VERSION not set))
+ZED_TARBALL := zed-$(PKG_VERSION).tar.gz
+ZED_URL := https://github.com/zed-industries/zed/releases/download/v$(PKG_VERSION)/zed-linux-x86_64.tar.gz
+
+%:
+	dh $@
+
+override_dh_auto_build:
+	curl --fail --show-error -sL -o $(ZED_TARBALL) $(ZED_URL)
+	rm -rf source
+	mkdir -p source
+	tar xzf $(ZED_TARBALL) -C source
+
+override_dh_auto_install:
+	mkdir -p debian/zed/opt/zed
+	cp -r source/zed.app/bin source/zed.app/lib source/zed.app/libexec debian/zed/opt/zed/
+	mkdir -p debian/zed/usr/bin
+	ln -s /opt/zed/bin/zed debian/zed/usr/bin/zed
+	install -D -m 644 source/zed.app/share/applications/dev.zed.Zed.desktop debian/zed/usr/share/applications/dev.zed.Zed.desktop
+	mkdir -p debian/zed/usr/share/icons/hicolor/512x512/apps
+	install -D -m 644 source/zed.app/share/icons/hicolor/512x512/apps/zed.png debian/zed/usr/share/icons/hicolor/512x512/apps/zed.png
+	mkdir -p debian/zed/usr/share/icons/hicolor/1024x1024/apps
+	install -D -m 644 source/zed.app/share/icons/hicolor/1024x1024/apps/zed.png debian/zed/usr/share/icons/hicolor/1024x1024/apps/zed.png
+
+override_dh_auto_clean:
+	rm -rf $(ZED_TARBALL) source
+
+override_dh_strip:
+	# Skip stripping pre-built binaries
+
+override_dh_shlibdeps:
+	# Skip shared library dependency detection for pre-built binary
