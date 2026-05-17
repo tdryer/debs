@@ -13,6 +13,7 @@ build: \
     build-diff2html \
     build-fence \
     build-fzf \
+    build-gh \
     build-ghostty \
     build-just \
     build-kitty \
@@ -36,6 +37,21 @@ _build pkg version:
     (cd {{pkg_dir}}/{{pkg}} && PKG_VERSION={{version}} dpkg-buildpackage -us -uc -b --post-clean)
     mkdir -p "{{output_dir}}"
     mv "{{pkg_dir}}/{{pkg}}_{{version}}-1_amd64.deb" "{{output_dir}}/"
+
+# Generic recipe to download a pre-built upstream deb as-is
+_download_deb pkg version url_template:
+    #!/usr/bin/env bash
+    set -eu
+    url="{{url_template}}"
+    url=$(sed "s/{{"{{"}}version{{"}}"}}/{{version}}/g" <<< "$url")
+    deb="${url##*/}"
+    if [ "{{force}}" != "true" ] && [ -f {{output_dir}}/"$deb" ]; then
+        echo "{{pkg}} {{version}} already built, skipping."
+        exit 0
+    fi
+    curl --fail --show-error -sL -o "$deb" "$url"
+    mkdir -p "{{output_dir}}"
+    mv "$deb" "{{output_dir}}/"
 
 # Build uv Debian package
 build-uv: (_build "uv" `gh release list --repo astral-sh/uv --exclude-drafts --exclude-pre-releases --limit 1 --json tagName --jq '.[0].tagName'`)
@@ -66,6 +82,9 @@ build-fzf: (_build "fzf" `gh release list --repo junegunn/fzf --exclude-drafts -
 
 # Build typos Debian package
 build-typos: (_build "typos" `gh release list --repo crate-ci/typos --exclude-drafts --exclude-pre-releases --limit 1 --json tagName --jq '.[0].tagName | ltrimstr("v")'`)
+
+# Build gh Debian package
+build-gh: (_download_deb "gh" `gh release list --repo cli/cli --exclude-drafts --exclude-pre-releases --limit 1 --json tagName --jq '.[0].tagName | ltrimstr("v")'` "https://github.com/cli/cli/releases/download/v{{version}}/gh_{{version}}_linux_amd64.deb")
 
 # Build ghostty Debian package
 build-ghostty: (_build "ghostty" `gh release list --repo mkasberg/ghostty-ubuntu --exclude-drafts --exclude-pre-releases --limit 1 --json tagName --jq '.[0].tagName | gsub("-0-ppa[0-9]*$"; "")'`)
