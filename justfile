@@ -90,7 +90,7 @@ build-gh: (_download_deb "gh" `gh release list --repo cli/cli --exclude-drafts -
 build-ghostty: (_build "ghostty" `gh release list --repo mkasberg/ghostty-ubuntu --exclude-drafts --exclude-pre-releases --limit 1 --json tagName --jq '.[0].tagName | gsub("-0-ppa[0-9]*$"; "")'`)
 
 # Build fence Debian package
-build-fence: (_build "fence" `gh release list --repo Use-Tusk/fence --exclude-drafts --exclude-pre-releases --limit 1 --json tagName --jq '.[0].tagName | ltrimstr("v")'`)
+build-fence: (_build "fence" `gh release list --repo fencesandbox/fence --exclude-drafts --exclude-pre-releases --limit 1 --json tagName --jq '.[0].tagName | ltrimstr("v")'`)
 
 # Build opencode Debian package
 build-opencode: (_build "opencode" `gh release list --repo anomalyco/opencode --exclude-drafts --exclude-pre-releases --limit 1 --json tagName --jq '.[0].tagName | ltrimstr("v")'`)

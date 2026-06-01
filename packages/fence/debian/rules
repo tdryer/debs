@@ -2,7 +2,7 @@
 
 PKG_VERSION := $(or $(PKG_VERSION),$(error PKG_VERSION not set))
 FENCE_TARBALL := fence-$(PKG_VERSION).tar.gz
-FENCE_URL := https://github.com/Use-Tusk/fence/releases/download/v$(PKG_VERSION)/fence_$(PKG_VERSION)_Linux_x86_64.tar.gz
+FENCE_URL := https://github.com/fencesandbox/fence/releases/download/v$(PKG_VERSION)/fence_$(PKG_VERSION)_Linux_x86_64.tar.gz
 
 %:
 	dh $@
