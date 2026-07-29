@@ -22,7 +22,8 @@ build: \
     build-opencode \
     build-typos \
     build-uv \
-    build-zed
+    build-zed \
+    build-nono-cli
 
 # Generic build recipe
 _build pkg version:
@@ -97,6 +98,9 @@ build-opencode: (_build "opencode" `gh release list --repo anomalyco/opencode --
 
 # Build zed Debian package
 build-zed: (_build "zed" `gh release list --repo zed-industries/zed --exclude-drafts --exclude-pre-releases --limit 1 --json tagName --jq '.[0].tagName | ltrimstr("v")'`)
+
+# Build nono-cli Debian package
+build-nono-cli: (_download_deb "nono-cli" `gh release list --repo nolabs-ai/nono --exclude-drafts --exclude-pre-releases --limit 1 --json tagName --jq '.[0].tagName | ltrimstr("v")'` "https://github.com/nolabs-ai/nono/releases/download/v{{version}}/nono-cli_{{version}}_amd64.deb")
 
 # Remove build artifacts
 clean:
