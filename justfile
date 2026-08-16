@@ -1,6 +1,7 @@
 output_dir := "/srv/local-apt-repository"
 pkg_dir := "packages"
 force := "false"
+retain := "3"
 
 # Show recipes
 default:
@@ -101,6 +102,41 @@ build-zed: (_build "zed" `gh release list --repo zed-industries/zed --exclude-dr
 
 # Build nono-cli Debian package
 build-nono-cli: (_download_deb "nono-cli" `gh release list --repo nolabs-ai/nono --exclude-drafts --exclude-pre-releases --limit 1 --json tagName --jq '.[0].tagName | ltrimstr("v")'` "https://github.com/nolabs-ai/nono/releases/download/v{{version}}/nono-cli_{{version}}_amd64.deb")
+
+# Retain only the configured number of newest versions of each package
+prune-repository:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    shopt -s nullglob
+
+    declare -A package_files package_versions
+    for deb in "{{output_dir}}"/*.deb; do
+        package=$(dpkg-deb --field "$deb" Package)
+        version=$(dpkg-deb --field "$deb" Version)
+        package_files["$package"]+=$'\n'"$deb"
+        package_versions["$package"]+=$'\n'"$version"
+    done
+
+    for package in "${!package_files[@]}"; do
+        mapfile -t files < <(printf '%s\n' "${package_files[$package]}" | sed '/^$/d')
+        mapfile -t versions < <(printf '%s\n' "${package_versions[$package]}" | sed '/^$/d')
+        order=()
+        for index in "${!files[@]}"; do
+            insert_at=${#order[@]}
+            for position in "${!order[@]}"; do
+                if dpkg --compare-versions "${versions[$index]}" gt "${versions[${order[$position]}]}"; then
+                    insert_at=$position
+                    break
+                fi
+            done
+            order=("${order[@]:0:insert_at}" "$index" "${order[@]:insert_at}")
+        done
+
+        for position in "${order[@]:{{retain}}}"; do
+            printf 'Removing old %s package: %s\n' "$package" "${files[$position]}"
+            rm -- "${files[$position]}"
+        done
+    done
 
 # Remove build artifacts
 clean:
