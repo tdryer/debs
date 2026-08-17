@@ -15,3 +15,7 @@ Set up the systemd timer using the included Ansible playbook:
 Or, trigger a build manually:
 
     just build
+
+Or, build and install one package (invokes `sudo`):
+
+    just install <packagename>
