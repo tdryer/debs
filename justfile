@@ -56,7 +56,11 @@ _build pkg version:
         "$(date -R)" > {{pkg_dir}}/{{pkg}}/debian/changelog
     (cd {{pkg_dir}}/{{pkg}} && PKG_VERSION={{version}} dpkg-buildpackage -us -uc -b --post-clean)
     mkdir -p "{{output_dir}}"
-    mv "{{pkg_dir}}/{{pkg}}_{{version}}-1_amd64.deb" "{{output_dir}}/"
+    tmp=$(mktemp "{{output_dir}}/.{{pkg}}_{{version}}-1_amd64.deb.XXXXXX")
+    trap 'rm -f "$tmp"' EXIT
+    install -m 0644 "{{pkg_dir}}/{{pkg}}_{{version}}-1_amd64.deb" "$tmp"
+    dpkg-deb --contents "$tmp" >/dev/null
+    mv -- "$tmp" "{{output_dir}}/{{pkg}}_{{version}}-1_amd64.deb"
 
 # Generic recipe to download a pre-built upstream deb as-is
 _download_deb pkg version url_template:
@@ -69,9 +73,12 @@ _download_deb pkg version url_template:
         echo "{{pkg}} {{version}} already built, skipping."
         exit 0
     fi
-    curl --fail --show-error -sL -o "$deb" "$url"
     mkdir -p "{{output_dir}}"
-    mv "$deb" "{{output_dir}}/"
+    tmp=$(mktemp "{{output_dir}}/.$deb.XXXXXX")
+    trap 'rm -f "$tmp"' EXIT
+    curl --fail --show-error -sL -o "$tmp" "$url"
+    dpkg-deb --contents "$tmp" >/dev/null
+    mv -- "$tmp" "{{output_dir}}/$deb"
 
 # Build uv Debian package
 build-uv: (_build "uv" `gh release list --repo astral-sh/uv --exclude-drafts --exclude-pre-releases --limit 1 --json tagName --jq '.[0].tagName'`)
