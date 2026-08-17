@@ -16,6 +16,6 @@ Or, trigger a build manually:
 
     just build
 
-Or, build and install one package (invokes `sudo`):
+Or, build and install one or more packages (invokes `sudo`):
 
     just install <packagename>

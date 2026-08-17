@@ -26,18 +26,23 @@ build: \
     build-zed \
     build-nono-cli
 
-# Build and install a Debian package
-install package:
+# Build and install one or more Debian packages
+install +packages:
     #!/usr/bin/env bash
     set -euo pipefail
-    if ! just --summary | tr ' ' '\n' | grep -Fxq "build-{{ package }}"; then
-        printf 'Unknown package: %s\n' "{{package}}" >&2
-        exit 1
-    fi
-    just "build-{{package}}"
+    packages=( {{packages}} )
+    for package in "${packages[@]}"; do
+        if ! just --summary | tr ' ' '\n' | grep -Fxq "build-$package"; then
+            printf 'Unknown package: %s\n' "$package" >&2
+            exit 1
+        fi
+    done
+    for package in "${packages[@]}"; do
+        just "build-$package"
+    done
     sudo systemctl start --wait local-apt-repository.service
     sudo apt update
-    sudo apt install "{{package}}"
+    sudo apt install "${packages[@]}"
 
 # Generic build recipe
 _build pkg version:
