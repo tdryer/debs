@@ -3,25 +3,30 @@
 PKG_VERSION := $(or $(PKG_VERSION),$(error PKG_VERSION not set))
 CODEX_TARBALL := codex-$(PKG_VERSION).tar.gz
 CODEX_URL := https://github.com/openai/codex/releases/download/rust-v$(PKG_VERSION)/codex-x86_64-unknown-linux-musl.tar.gz
+CODEX_CODE_MODE_HOST_TARBALL := codex-code-mode-host-$(PKG_VERSION).tar.gz
+CODEX_CODE_MODE_HOST_URL := https://github.com/openai/codex/releases/download/rust-v$(PKG_VERSION)/codex-code-mode-host-x86_64-unknown-linux-musl.tar.gz
 
 %:
 	dh $@
 
 override_dh_auto_build:
 	curl --fail --show-error -sL -o $(CODEX_TARBALL) $(CODEX_URL)
+	curl --fail --show-error -sL -o $(CODEX_CODE_MODE_HOST_TARBALL) $(CODEX_CODE_MODE_HOST_URL)
 	rm -rf source
 	mkdir -p source
 	tar xzf $(CODEX_TARBALL) -C source
+	tar xzf $(CODEX_CODE_MODE_HOST_TARBALL) -C source
 
 override_dh_auto_install:
 	install -D -m 755 source/codex-x86_64-unknown-linux-musl debian/codex/usr/bin/codex
+	install -D -m 755 source/codex-code-mode-host-x86_64-unknown-linux-musl debian/codex/usr/bin/codex-code-mode-host
 
 override_dh_install:
 	dh_install
 	dh_apparmor --profile-name=codex -p codex
 
 override_dh_auto_clean:
-	rm -rf $(CODEX_TARBALL) source
+	rm -rf $(CODEX_TARBALL) $(CODEX_CODE_MODE_HOST_TARBALL) source
 
 override_dh_strip:
 	# Skip stripping pre-built binaries
