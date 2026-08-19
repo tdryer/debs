@@ -16,6 +16,10 @@ override_dh_auto_build:
 override_dh_auto_install:
 	install -D -m 755 source/codex-x86_64-unknown-linux-musl debian/codex/usr/bin/codex
 
+override_dh_install:
+	dh_install
+	dh_apparmor --profile-name=codex -p codex
+
 override_dh_auto_clean:
 	rm -rf $(CODEX_TARBALL) source
 
