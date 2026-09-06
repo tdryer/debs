@@ -78,6 +78,7 @@ _download_deb pkg version url_template:
     trap 'rm -f "$tmp"' EXIT
     curl --fail --show-error -sL -o "$tmp" "$url"
     dpkg-deb --contents "$tmp" >/dev/null
+    chmod 0644 "$tmp"
     mv -- "$tmp" "{{output_dir}}/$deb"
 
 # Build uv Debian package
