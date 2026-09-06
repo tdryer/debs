@@ -8,7 +8,7 @@ default:
     just --list
 
 # Build all Debian packages
-build: build-codex build-copilot build-diff2html build-fence build-fzf build-gh build-ghostty build-just build-kitty build-mdserve build-neovim build-opencode build-typos build-uv build-zed build-nono-cli
+build: build-codex build-copilot build-diff2html build-fence build-fzf build-ghostty build-just build-kitty build-mdserve build-neovim build-opencode build-typos build-uv build-zed build-nono-cli
 
 # Build and install one or more Debian packages
 install +packages:
@@ -94,9 +94,6 @@ build-fzf: (_build "fzf" `gh release list --repo junegunn/fzf --exclude-drafts -
 
 # Build typos Debian package
 build-typos: (_build "typos" `gh release list --repo crate-ci/typos --exclude-drafts --exclude-pre-releases --limit 1 --json tagName --jq '.[0].tagName | ltrimstr("v")'`)
-
-# Build gh Debian package
-build-gh: (_download_deb "gh" `gh release list --repo cli/cli --exclude-drafts --exclude-pre-releases --limit 1 --json tagName --jq '.[0].tagName | ltrimstr("v")'` "https://github.com/cli/cli/releases/download/v{{version}}/gh_{{version}}_linux_amd64.deb")
 
 # Build ghostty Debian package
 build-ghostty: (_build "ghostty" `gh release list --repo mkasberg/ghostty-ubuntu --exclude-drafts --exclude-pre-releases --limit 1 --json tagName --jq '.[0].tagName | gsub("-0-ppa[0-9]*$"; "")'`)
