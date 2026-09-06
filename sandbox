@@ -16,6 +16,7 @@ BINARIES = [
     "just",
     "claude",
     "codex",
+    "codex-code-mode-host",
     "opencode",
     "gh",
 ]
@@ -41,9 +42,9 @@ RUN apt-get update && \
 """
 
 
-def secret_tool_lookup() -> str:
+def secret_tool_lookup(service) -> str:
     result = subprocess.run(
-        ["secret-tool", "lookup", "service", "copilot-cli"],
+        ["secret-tool", "lookup", "service", service],
         capture_output=True,
         text=True,
         check=True,
@@ -105,7 +106,8 @@ def main():
         "--hostname=devel",
         "--workdir=/devel",
         *mount_args,
-        f"--env=GITHUB_TOKEN={secret_tool_lookup()}",
+        f"--env=GITHUB_TOKEN={secret_tool_lookup("copilot-cli")}",
+        f"--env=AZURE_OPENAI_API_KEY={secret_tool_lookup("azure-openai-key")}",
         f"--env=TERM={os.environ.get('TERM', 'xterm')}",
         "--env=IS_SANDBOX=1",
         "--env=TZ=America/Vancouver",
