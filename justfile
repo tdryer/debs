@@ -8,29 +8,13 @@ default:
     just --list
 
 # Build all Debian packages
-build: \
-    build-codex \
-    build-copilot \
-    build-diff2html \
-    build-fence \
-    build-fzf \
-    build-gh \
-    build-ghostty \
-    build-just \
-    build-kitty \
-    build-mdserve \
-    build-neovim \
-    build-opencode \
-    build-typos \
-    build-uv \
-    build-zed \
-    build-nono-cli
+build: build-codex build-copilot build-diff2html build-fence build-fzf build-gh build-ghostty build-just build-kitty build-mdserve build-neovim build-opencode build-typos build-uv build-zed build-nono-cli
 
 # Build and install one or more Debian packages
 install +packages:
     #!/usr/bin/env bash
     set -euo pipefail
-    packages=( {{packages}} )
+    packages=( {{ packages }} )
     for package in "${packages[@]}"; do
         if ! just --summary | tr ' ' '\n' | grep -Fxq "build-$package"; then
             printf 'Unknown package: %s\n' "$package" >&2
@@ -48,38 +32,38 @@ install +packages:
 _build pkg version:
     #!/usr/bin/env bash
     set -eu
-    if [ "{{force}}" != "true" ] && [ -f {{output_dir}}/{{pkg}}_{{version}}-1_amd64.deb ]; then
-        echo "{{pkg}} {{version}} already built, skipping."
+    if [ "{{ force }}" != "true" ] && [ -f {{ output_dir }}/{{ pkg }}_{{ version }}-1_amd64.deb ]; then
+        echo "{{ pkg }} {{ version }} already built, skipping."
         exit 0
     fi
-    printf '{{pkg}} ({{version}}-1) unstable; urgency=medium\n\n  * Package {{pkg}} {{version}} from upstream release binaries.\n\n -- Local Builder <builder@localhost>  %s\n' \
-        "$(date -R)" > {{pkg_dir}}/{{pkg}}/debian/changelog
-    (cd {{pkg_dir}}/{{pkg}} && PKG_VERSION={{version}} dpkg-buildpackage -us -uc -b --post-clean)
-    mkdir -p "{{output_dir}}"
-    tmp=$(mktemp "{{output_dir}}/.{{pkg}}_{{version}}-1_amd64.deb.XXXXXX")
+    printf '{{ pkg }} ({{ version }}-1) unstable; urgency=medium\n\n  * Package {{ pkg }} {{ version }} from upstream release binaries.\n\n -- Local Builder <builder@localhost>  %s\n' \
+        "$(date -R)" > {{ pkg_dir }}/{{ pkg }}/debian/changelog
+    (cd {{ pkg_dir }}/{{ pkg }} && PKG_VERSION={{ version }} dpkg-buildpackage -us -uc -b --post-clean)
+    mkdir -p "{{ output_dir }}"
+    tmp=$(mktemp "{{ output_dir }}/.{{ pkg }}_{{ version }}-1_amd64.deb.XXXXXX")
     trap 'rm -f "$tmp"' EXIT
-    install -m 0644 "{{pkg_dir}}/{{pkg}}_{{version}}-1_amd64.deb" "$tmp"
+    install -m 0644 "{{ pkg_dir }}/{{ pkg }}_{{ version }}-1_amd64.deb" "$tmp"
     dpkg-deb --contents "$tmp" >/dev/null
-    mv -- "$tmp" "{{output_dir}}/{{pkg}}_{{version}}-1_amd64.deb"
+    mv -- "$tmp" "{{ output_dir }}/{{ pkg }}_{{ version }}-1_amd64.deb"
 
 # Generic recipe to download a pre-built upstream deb as-is
 _download_deb pkg version url_template:
     #!/usr/bin/env bash
     set -eu
-    url="{{url_template}}"
-    url=$(sed "s/{{"{{"}}version{{"}}"}}/{{version}}/g" <<< "$url")
+    url="{{ url_template }}"
+    url=$(sed "s/{{ "{{" }}version{{ "}}" }}/{{ version }}/g" <<< "$url")
     deb="${url##*/}"
-    if [ "{{force}}" != "true" ] && [ -f {{output_dir}}/"$deb" ]; then
-        echo "{{pkg}} {{version}} already built, skipping."
+    if [ "{{ force }}" != "true" ] && [ -f {{ output_dir }}/"$deb" ]; then
+        echo "{{ pkg }} {{ version }} already built, skipping."
         exit 0
     fi
-    mkdir -p "{{output_dir}}"
-    tmp=$(mktemp "{{output_dir}}/.$deb.XXXXXX")
+    mkdir -p "{{ output_dir }}"
+    tmp=$(mktemp "{{ output_dir }}/.$deb.XXXXXX")
     trap 'rm -f "$tmp"' EXIT
     curl --fail --show-error -sL -o "$tmp" "$url"
     dpkg-deb --contents "$tmp" >/dev/null
     chmod 0644 "$tmp"
-    mv -- "$tmp" "{{output_dir}}/$deb"
+    mv -- "$tmp" "{{ output_dir }}/$deb"
 
 # Build uv Debian package
 build-uv: (_build "uv" `gh release list --repo astral-sh/uv --exclude-drafts --exclude-pre-releases --limit 1 --json tagName --jq '.[0].tagName'`)
@@ -136,7 +120,7 @@ prune-repository:
     shopt -s nullglob
 
     declare -A package_files package_versions
-    for deb in "{{output_dir}}"/*.deb; do
+    for deb in "{{ output_dir }}"/*.deb; do
         package=$(dpkg-deb --field "$deb" Package)
         version=$(dpkg-deb --field "$deb" Version)
         package_files["$package"]+=$'\n'"$deb"
@@ -158,7 +142,7 @@ prune-repository:
             order=("${order[@]:0:insert_at}" "$index" "${order[@]:insert_at}")
         done
 
-        for position in "${order[@]:{{retain}}}"; do
+        for position in "${order[@]:{{ retain }}}"; do
             printf 'Removing old %s package: %s\n' "$package" "${files[$position]}"
             rm -- "${files[$position]}"
         done
@@ -166,15 +150,15 @@ prune-repository:
 
 # Remove build artifacts
 clean:
-    rm -f {{pkg_dir}}/*.deb {{pkg_dir}}/*.buildinfo {{pkg_dir}}/*.changes
-    for pkg in {{pkg_dir}}/*/debian/rules; do \
+    rm -f {{ pkg_dir }}/*.deb {{ pkg_dir }}/*.buildinfo {{ pkg_dir }}/*.changes
+    for pkg in {{ pkg_dir }}/*/debian/rules; do \
         pkg=$(basename ${pkg%%/debian/rules}); \
-        rm -rf {{pkg_dir}}/$pkg/debian/.debhelper/ {{pkg_dir}}/$pkg/debian/debhelper-build-stamp \
-               {{pkg_dir}}/$pkg/debian/files {{pkg_dir}}/$pkg/debian/*.substvars \
-               {{pkg_dir}}/$pkg/debian/$pkg/ {{pkg_dir}}/$pkg/debian/changelog \
-               {{pkg_dir}}/$pkg/debian/*.debhelper {{pkg_dir}}/$pkg/*.deb; \
+        rm -rf {{ pkg_dir }}/$pkg/debian/.debhelper/ {{ pkg_dir }}/$pkg/debian/debhelper-build-stamp \
+               {{ pkg_dir }}/$pkg/debian/files {{ pkg_dir }}/$pkg/debian/*.substvars \
+               {{ pkg_dir }}/$pkg/debian/$pkg/ {{ pkg_dir }}/$pkg/debian/changelog \
+               {{ pkg_dir }}/$pkg/debian/*.debhelper {{ pkg_dir }}/$pkg/*.deb; \
     done
-    rm -rf {{pkg_dir}}/*/source/ {{pkg_dir}}/*/*.tar.gz
+    rm -rf {{ pkg_dir }}/*/source/ {{ pkg_dir }}/*/*.tar.gz
 
 # Run setup playbook
 playbook:
