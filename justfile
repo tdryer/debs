@@ -81,7 +81,7 @@ build-neovim: (_build "neovim" `gh release list --repo neovim/neovim --exclude-d
 build-kitty: (_build "kitty" `gh release list --repo kovidgoyal/kitty --exclude-drafts --exclude-pre-releases --limit 1 --json tagName --jq '.[0].tagName | ltrimstr("v")'`)
 
 # Build codex Debian package
-build-codex: (_build "codex" `gh release list --repo openai/codex --exclude-drafts --exclude-pre-releases --limit 1 --json tagName --jq '.[0].tagName | ltrimstr("rust-v")'`)
+build-codex: (_build "codex" `gh release list --repo openai/codex --exclude-drafts --exclude-pre-releases --limit 100 --json tagName --jq 'map(select(.tagName | startswith("rust-v"))) | first.tagName | ltrimstr("rust-v")'`)
 
 # Build copilot Debian package
 build-copilot: (_build "copilot" `gh release list --repo github/copilot-cli --exclude-drafts --exclude-pre-releases --limit 1 --json tagName --jq '.[0].tagName | ltrimstr("v")'`)
