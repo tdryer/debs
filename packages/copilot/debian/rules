@@ -16,6 +16,10 @@ override_dh_auto_build:
 override_dh_auto_install:
 	install -D -m 755 source/copilot debian/copilot/usr/bin/copilot
 
+override_dh_install:
+	dh_install
+	dh_apparmor --profile-name=copilot -p copilot
+
 override_dh_auto_clean:
 	rm -rf $(COPILOT_TARBALL) source
 
