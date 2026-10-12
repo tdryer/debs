@@ -32,17 +32,22 @@ install +packages:
 _build pkg version:
     #!/usr/bin/env bash
     set -eu
-    if [ "{{ force }}" != "true" ] && [ -f {{ output_dir }}/{{ pkg }}_{{ version }}-1_amd64.deb ]; then
+    if [ "{{ force }}" != "true" ] && [ -f "{{ output_dir }}/{{ pkg }}_{{ version }}-1_amd64.deb" ]; then
         echo "{{ pkg }} {{ version }} already built, skipping."
         exit 0
     fi
+    build_dir=$(mktemp -d -t "debs.{{ pkg }}.XXXXXXXXXX")
+    tmp=""
+    trap 'rm -f -- "$tmp"; rm -rf -- "$build_dir"' EXIT
+    trap 'exit 130' INT
+    trap 'exit 143' TERM
+    cp -a "{{ pkg_dir }}/{{ pkg }}" "$build_dir/{{ pkg }}"
     printf '{{ pkg }} ({{ version }}-1) unstable; urgency=medium\n\n  * Package {{ pkg }} {{ version }} from upstream release binaries.\n\n -- Local Builder <builder@localhost>  %s\n' \
-        "$(date -R)" > {{ pkg_dir }}/{{ pkg }}/debian/changelog
-    (cd {{ pkg_dir }}/{{ pkg }} && PKG_VERSION={{ version }} dpkg-buildpackage -us -uc -b --post-clean)
+        "$(date -R)" > "$build_dir/{{ pkg }}/debian/changelog"
+    (cd "$build_dir/{{ pkg }}" && PKG_VERSION={{ version }} dpkg-buildpackage -us -uc -b --post-clean)
     mkdir -p "{{ output_dir }}"
     tmp=$(mktemp "{{ output_dir }}/.{{ pkg }}_{{ version }}-1_amd64.deb.XXXXXX")
-    trap 'rm -f "$tmp"' EXIT
-    install -m 0644 "{{ pkg_dir }}/{{ pkg }}_{{ version }}-1_amd64.deb" "$tmp"
+    install -m 0644 "$build_dir/{{ pkg }}_{{ version }}-1_amd64.deb" "$tmp"
     dpkg-deb --contents "$tmp" >/dev/null
     mv -- "$tmp" "{{ output_dir }}/{{ pkg }}_{{ version }}-1_amd64.deb"
 
