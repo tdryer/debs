@@ -8,7 +8,7 @@ default:
     just --list
 
 # Build all Debian packages
-build: build-codex build-copilot build-diff2html build-fence build-fzf build-ghostty build-just build-kitty build-mdserve build-neovim build-opencode build-typos build-uv build-nono-cli
+build: build-codex build-copilot build-diff2html build-fence build-fzf build-ghostty build-iron-proxy build-just build-kitty build-mdserve build-neovim build-opencode build-typos build-uv build-nono-cli
 
 # Build and install one or more Debian packages
 install +packages:
@@ -103,6 +103,9 @@ build-fence: (_build "fence" `gh release list --repo fencesandbox/fence --exclud
 
 # Build opencode Debian package
 build-opencode: (_build "opencode" `gh release list --repo anomalyco/opencode --exclude-drafts --exclude-pre-releases --limit 1 --json tagName --jq '.[0].tagName | ltrimstr("v")'`)
+
+# Build iron-proxy Debian package
+build-iron-proxy: (_build "iron-proxy" `gh release list --repo paradigmxyz/iron-proxy --exclude-drafts --exclude-pre-releases --limit 1 --json tagName --jq '.[0].tagName | ltrimstr("v")'`)
 
 # Build nono-cli Debian package
 build-nono-cli: (_download_deb "nono-cli" `gh release list --repo nolabs-ai/nono --exclude-drafts --exclude-pre-releases --limit 1 --json tagName --jq '.[0].tagName | ltrimstr("v")'` "https://github.com/nolabs-ai/nono/releases/download/v{{version}}/nono-cli_{{version}}_amd64.deb")

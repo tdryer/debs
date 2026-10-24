@@ -1,0 +1,13 @@
+Source: iron-proxy
+Section: misc
+Maintainer: Local Builder <builder@localhost>
+Build-Depends: debhelper-compat (= 13), curl
+Homepage: https://github.com/paradigmxyz/iron-proxy
+
+Package: iron-proxy
+Architecture: amd64
+Description: Egress firewall for untrusted workloads.
+ iron-proxy is a MITM egress proxy with a built-in DNS server that sits
+ between untrusted workloads and the internet. It enforces default-deny
+ egress, injects real secrets at the boundary in place of proxy tokens,
+ and logs every request as structured JSON.

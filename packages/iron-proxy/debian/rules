@@ -1,0 +1,26 @@
+#!/usr/bin/make -f
+
+PKG_VERSION := $(or $(PKG_VERSION),$(error PKG_VERSION not set))
+IRON_PROXY_TARBALL := iron-proxy-$(PKG_VERSION).tar.gz
+IRON_PROXY_URL := https://github.com/paradigmxyz/iron-proxy/releases/download/v$(PKG_VERSION)/iron-proxy_$(PKG_VERSION)_linux_amd64.tar.gz
+
+%:
+	dh $@
+
+override_dh_auto_build:
+	curl --fail --show-error -sL -o $(IRON_PROXY_TARBALL) $(IRON_PROXY_URL)
+	rm -rf source
+	mkdir -p source
+	tar xzf $(IRON_PROXY_TARBALL) -C source
+
+override_dh_auto_install:
+	install -D -m 755 source/iron-proxy debian/iron-proxy/usr/bin/iron-proxy
+
+override_dh_auto_clean:
+	rm -rf $(IRON_PROXY_TARBALL) source
+
+override_dh_strip:
+	# Skip stripping pre-built binaries
+
+override_dh_shlibdeps:
+	# Skip shared library dependency detection for pre-built binary
