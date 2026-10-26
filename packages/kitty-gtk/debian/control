@@ -38,7 +38,6 @@ Homepage: https://github.com/tdryer/kitty/tree/gtk-backend
 Package: kitty-gtk
 Architecture: amd64
 Depends: ${shlibs:Depends}, ${misc:Depends}, libcanberra0, libegl1, libxkbcommon-x11-0
-Recommends: kitty-terminfo
 Description: kitty terminal emulator with a GTK 4 / libadwaita backend
  A build of the gtk-backend branch of kitty, a fast, feature-rich, GPU based
  terminal emulator, with a GLFW backend that uses GTK 4 and libadwaita on
