@@ -1,0 +1,46 @@
+Source: kitty-gtk
+Section: x11
+Maintainer: Local Builder <builder@localhost>
+Build-Depends: debhelper-compat (= 13),
+               ca-certificates,
+               curl,
+               git,
+               golang-go,
+               libadwaita-1-dev (>= 1.9),
+               libcairo2-dev,
+               libcanberra-dev,
+               libdbus-1-dev,
+               libfontconfig-dev,
+               libgl1-mesa-dev,
+               libgtk-4-dev (>= 4.22),
+               libharfbuzz-dev,
+               liblcms2-dev,
+               libpng-dev,
+               libsimde-dev,
+               libssl-dev,
+               libsystemd-dev,
+               libwayland-dev,
+               libxcursor-dev,
+               libxi-dev,
+               libxinerama-dev,
+               libxkbcommon-dev,
+               libxkbcommon-x11-dev,
+               libxrandr-dev,
+               libxxhash-dev,
+               ncurses-bin,
+               pkg-config,
+               python3-dev,
+               wayland-protocols,
+               xz-utils,
+               zlib1g-dev
+Homepage: https://github.com/tdryer/kitty/tree/gtk-backend
+
+Package: kitty-gtk
+Architecture: amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}, libcanberra0, libegl1, libxkbcommon-x11-0
+Recommends: kitty-terminfo
+Description: kitty terminal emulator with a GTK 4 / libadwaita backend
+ A build of the gtk-backend branch of kitty, a fast, feature-rich, GPU based
+ terminal emulator, with a GLFW backend that uses GTK 4 and libadwaita on
+ Wayland. It is installed in /opt/kitty-gtk and can be installed alongside
+ the kitty package. Run it with kitty-gtk.

@@ -26,6 +26,45 @@
         - dh-apparmor
         - gh
 
+    # Keep in sync with Build-Depends in packages/kitty-gtk/debian/control.
+    # kitty-gtk also needs uv, which debs packages.
+    - name: Install kitty-gtk build dependencies
+      become: true
+      ansible.builtin.apt:
+        name:
+          - ca-certificates
+          - curl
+          - git
+          - golang-go
+          - libadwaita-1-dev
+          - libcairo2-dev
+          - libcanberra-dev
+          - libdbus-1-dev
+          - libfontconfig-dev
+          - libgl1-mesa-dev
+          - libgtk-4-dev
+          - libharfbuzz-dev
+          - liblcms2-dev
+          - libpng-dev
+          - libsimde-dev
+          - libssl-dev
+          - libsystemd-dev
+          - libwayland-dev
+          - libxcursor-dev
+          - libxi-dev
+          - libxinerama-dev
+          - libxkbcommon-dev
+          - libxkbcommon-x11-dev
+          - libxrandr-dev
+          - libxxhash-dev
+          - ncurses-bin
+          - pkg-config
+          - python3-dev
+          - wayland-protocols
+          - xz-utils
+          - zlib1g-dev
+        state: present
+
     - name: Configure local-apt-repository ownership
       become: true
       ansible.builtin.file:

@@ -1,0 +1,68 @@
+#!/usr/bin/make -f
+
+# PKG_VERSION is <kitty version>+git<commit timestamp>.<short commit sha>
+PKG_VERSION := $(or $(PKG_VERSION),$(error PKG_VERSION not set))
+KITTY_REPO := https://github.com/tdryer/kitty.git
+KITTY_BRANCH := gtk-backend
+KITTY_COMMIT := $(lastword $(subst ., ,$(PKG_VERSION)))
+# Ubuntu's slangc is too old for kitty's shaders
+SLANG_VERSION := 2026.14.1
+SLANG_TARBALL := slang-$(SLANG_VERSION)-linux-x86_64.tar.gz
+SLANG_URL := https://github.com/shader-slang/slang/releases/download/v$(SLANG_VERSION)/$(SLANG_TARBALL)
+NERD_FONTS_VERSION := 3.5.1
+NERD_FONTS_TARBALL := NerdFontsSymbolsOnly.tar.xz
+NERD_FONTS_URL := https://github.com/ryanoasis/nerd-fonts/releases/download/v$(NERD_FONTS_VERSION)/$(NERD_FONTS_TARBALL)
+PREFIX := /opt/kitty-gtk
+DEST := $(CURDIR)/debian/kitty-gtk
+
+export SLANGC := $(CURDIR)/slang/bin/slangc
+# Keep the Go caches in the build directory, writable so they can be removed
+export GOPATH := $(CURDIR)/go
+export GOCACHE := $(CURDIR)/go/cache
+export GOFLAGS := -modcacherw
+
+%:
+	dh $@
+
+override_dh_auto_build:
+	rm -rf source slang venv
+	git clone --quiet --single-branch --branch $(KITTY_BRANCH) --depth 50 $(KITTY_REPO) source
+	git -C source checkout --quiet --detach $(KITTY_COMMIT)
+	curl --fail --show-error -sL -o $(SLANG_TARBALL) $(SLANG_URL)
+	mkdir -p slang
+	tar xf $(SLANG_TARBALL) -C slang
+	curl --fail --show-error -sL -o $(NERD_FONTS_TARBALL) $(NERD_FONTS_URL)
+	mkdir -p source/fonts
+	tar xf $(NERD_FONTS_TARBALL) -C source/fonts SymbolsNerdFontMono-Regular.ttf
+	# Ubuntu does not package the docs' Sphinx theme
+	command -v uv >/dev/null || { echo 'uv is needed to build the kitty docs' >&2; exit 1; }
+	uv venv --quiet --python /usr/bin/python3 venv
+	uv pip install --quiet --python venv/bin/python -r source/docs/requirements.txt
+	# kitty builds with -Werror and its own optimization and hardening flags
+	# (stack protector, _FORTIFY_SOURCE, CET), which dpkg's flags conflict with
+	cd source && PATH="$(CURDIR)/venv/bin:$$PATH" CFLAGS= CPPFLAGS= LDFLAGS= /usr/bin/python3 setup.py linux-package \
+		--prefix $(CURDIR)/linux-package --update-check-interval=0
+	# setup.py skips the GTK backend when its dependencies are missing
+	test -f linux-package/lib/kitty/kitty/glfw-gtk.so
+
+override_dh_auto_install:
+	mkdir -p $(DEST)$(PREFIX)
+	cp -a linux-package/. $(DEST)$(PREFIX)/
+	install -D -m 755 debian/kitty-gtk.wrapper $(DEST)/usr/bin/kitty-gtk
+	install -D -m 644 debian/kitty-gtk.desktop $(DEST)/usr/share/applications/kitty-gtk.desktop
+	install -D -m 644 linux-package/share/icons/hicolor/256x256/apps/kitty.png $(DEST)/usr/share/icons/hicolor/256x256/apps/kitty-gtk.png
+	install -D -m 644 linux-package/share/icons/hicolor/scalable/apps/kitty.svg $(DEST)/usr/share/icons/hicolor/scalable/apps/kitty-gtk.svg
+
+override_dh_auto_clean:
+	# Go unpacks the toolchain it downloads read-only
+	if [ -d go ]; then chmod -R u+w go; fi
+	rm -rf source slang venv go linux-package $(SLANG_TARBALL) $(NERD_FONTS_TARBALL)
+
+override_dh_auto_test:
+	# kitty's tests need a display
+
+override_dh_dwz:
+	# dwz does not handle the Go binary
+
+override_dh_strip:
+	dh_strip --no-automatic-dbgsym

@@ -8,7 +8,7 @@ default:
     just --list
 
 # Build all Debian packages
-build: build-codex build-copilot build-diff2html build-fence build-fzf build-ghostty build-iron-proxy build-just build-kitty build-mdserve build-neovim build-opencode build-typos build-uv build-nono-cli
+build: build-codex build-copilot build-diff2html build-fence build-fzf build-ghostty build-iron-proxy build-just build-kitty build-kitty-gtk build-mdserve build-neovim build-opencode build-typos build-uv build-nono-cli
 
 # Build and install one or more Debian packages
 install +packages:
@@ -29,7 +29,7 @@ install +packages:
     sudo apt install "${packages[@]}"
 
 # Generic build recipe
-_build pkg version:
+_build pkg version source="upstream release binaries":
     #!/usr/bin/env bash
     set -eu
     if [ "{{ force }}" != "true" ] && [ -f "{{ output_dir }}/{{ pkg }}_{{ version }}-1_amd64.deb" ]; then
@@ -42,7 +42,7 @@ _build pkg version:
     trap 'exit 130' INT
     trap 'exit 143' TERM
     cp -a "{{ pkg_dir }}/{{ pkg }}" "$build_dir/{{ pkg }}"
-    printf '{{ pkg }} ({{ version }}-1) unstable; urgency=medium\n\n  * Package {{ pkg }} {{ version }} from upstream release binaries.\n\n -- Local Builder <builder@localhost>  %s\n' \
+    printf '{{ pkg }} ({{ version }}-1) unstable; urgency=medium\n\n  * Package {{ pkg }} {{ version }} from {{ source }}.\n\n -- Local Builder <builder@localhost>  %s\n' \
         "$(date -R)" > "$build_dir/{{ pkg }}/debian/changelog"
     (cd "$build_dir/{{ pkg }}" && PKG_VERSION={{ version }} dpkg-buildpackage -us -uc -b --post-clean)
     mkdir -p "{{ output_dir }}"
@@ -84,6 +84,19 @@ build-neovim: (_build "neovim" `gh release list --repo neovim/neovim --exclude-d
 
 # Build kitty Debian package
 build-kitty: (_build "kitty" `gh release list --repo kovidgoyal/kitty --exclude-drafts --exclude-pre-releases --limit 1 --json tagName --jq '.[0].tagName | ltrimstr("v")'`)
+
+# Build kitty-gtk Debian package from the gtk-backend branch of tdryer/kitty
+build-kitty-gtk: (_build "kitty-gtk" `just _kitty-gtk-version` "the gtk-backend branch of tdryer/kitty")
+
+# Print the kitty-gtk version: <kitty version>+git<commit timestamp>.<short sha>
+_kitty-gtk-version:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    read -r sha timestamp < <(gh api repos/tdryer/kitty/commits/gtk-backend --jq '.sha + " " + (.commit.committer.date | gsub("[^0-9]"; ""))')
+    version=$(gh api -H 'Accept: application/vnd.github.raw' "repos/tdryer/kitty/contents/kitty/constants.py?ref=$sha" |
+        sed -n 's/^version: Version = Version(\([0-9]*\), \([0-9]*\), \([0-9]*\)).*/\1.\2.\3/p')
+    [ -n "$version" ] || { echo 'Could not find the kitty version' >&2; exit 1; }
+    echo "$version+git$timestamp.${sha:0:7}"
 
 # Build codex Debian package
 build-codex: (_build "codex" `gh release list --repo openai/codex --exclude-drafts --exclude-pre-releases --limit 100 --json tagName --jq 'map(select(.tagName | startswith("rust-v"))) | first.tagName | ltrimstr("rust-v")'`)

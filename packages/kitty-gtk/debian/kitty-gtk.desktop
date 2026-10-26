@@ -1,0 +1,16 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=kitty (GTK)
+GenericName=Terminal emulator
+Comment=Fast, feature-rich, GPU based terminal, with a GTK backend
+TryExec=kitty-gtk
+StartupNotify=true
+Exec=kitty-gtk
+Icon=kitty-gtk
+Categories=System;TerminalEmulator;
+X-TerminalArgExec=--
+X-TerminalArgTitle=--title
+X-TerminalArgAppId=--class
+X-TerminalArgDir=--working-directory
+X-TerminalArgHold=--hold

@@ -1,0 +1,8 @@
+#!/bin/sh
+# Run kitty with the GTK backend. The window class matches kitty-gtk.desktop.
+export KITTY_GLFW_BACKEND=gtk
+case "$1" in
+    # kitty +kitten, kitty @ and kitty +open must come first
+    +* | @*) exec /opt/kitty-gtk/bin/kitty "$@" ;;
+    *) exec /opt/kitty-gtk/bin/kitty --class kitty-gtk "$@" ;;
+esac
