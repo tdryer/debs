@@ -7,6 +7,7 @@
 - name: Set up debs with local-apt-repository
   hosts: localhost
   connection: local
+  become_exe: "sudo.ws"
 
   vars:
     repo_owner: "{{ ansible_user | default(ansible_user_id) }}"
