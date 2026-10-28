@@ -19,6 +19,9 @@ override_dh_auto_install:
 override_dh_auto_clean:
 	rm -rf $(TYPOS_TARBALL) source
 
+override_dh_dwz:
+	# Skip DWARF optimization for pre-built binaries
+
 override_dh_strip:
 	# Skip stripping pre-built binaries
 
